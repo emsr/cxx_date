@@ -1,3 +1,5 @@
+#ifndef _GLIBCXX_DATE_IO_TCC
+#define _GLIBCXX_DATE_IO_TCC 1
 
 #pragma GCC system_header
 
@@ -7,7 +9,7 @@ namespace chrono {
   // DURATION I/O
 
 // Make a generic to_string for char and wchar_t.
-// basic_ostream<_CharT, _Traits> to_basic_string();
+// std::basic_ostream<_CharT, _Traits> to_basic_string();
 /*
   
   template<typename _CharT, typename _Traits, typename _Period>
@@ -45,17 +47,17 @@ namespace chrono {
 */
 
   template<typename _CharT, typename _Traits, typename _Rep, typename _Period>
-    basic_ostream<_CharT, _Traits>&
-    operator<<(basic_ostream<_CharT, _Traits>& __os,
+    std::basic_ostream<_CharT, _Traits>&
+    operator<<(std::basic_ostream<_CharT, _Traits>& __os,
 	       const duration<_Rep, _Period>& __d)
     {
-      basic_string<_CharT, _Traits> __dstr = to_string
+      //basic_string<_CharT, _Traits> __dstr = to_string
       return __os;
     }
 
   template<typename _CharT, typename _Traits, typename _Rep, typename _Period>
-    basic_ostream<_CharT, _Traits>&
-    to_stream(basic_ostream<_CharT, _Traits>& __os, const _CharT* __fmt,
+    std::basic_ostream<_CharT, _Traits>&
+    to_stream(std::basic_ostream<_CharT, _Traits>& __os, const _CharT* __fmt,
 	      const duration<_Rep, _Period>& __d)
     {
       return __os;
@@ -66,8 +68,8 @@ namespace chrono {
     basic_istream<_CharT, _Traits>&
     from_stream(basic_istream<_CharT, _Traits>& __is, const _CharT* __fmt,
 	        duration<_Rep, _Period>& __d,
-	        basic_string<_CharT, _Traits, _Alloc>* __abbrev = nullptr,
-	        minutes* __offset = nullptr)
+	        basic_string<_CharT, _Traits, _Alloc>* __abbrev,
+	        minutes* __offset)
     {
       return __is;
     }
@@ -77,26 +79,26 @@ namespace chrono {
   // OPERATOR<<
 
   template<typename _CharT, typename _Traits, typename _Duration>
-    basic_ostream<_CharT, _Traits>&
-    operator<<(basic_ostream<_CharT, _Traits>& __os,
+    std::basic_ostream<_CharT, _Traits>&
+    operator<<(std::basic_ostream<_CharT, _Traits>& __os,
 	       const sys_time<_Duration>& __tp)
     {
-      const auto __dp = std::floor<days>(__tp);
-      __os << year_month_day{dp} << ' ' << time_of_day{tp-dp};
+      const auto __dp = std::chrono::floor<days>(__tp);
+      __os << year_month_day{__dp} << ' ' << time_of_day{__tp - __dp};
       return __os;
     }
 
   template<typename _CharT, typename _Traits, typename _Duration>
-    basic_ostream<_CharT, _Traits>&
-    operator<<(basic_ostream<_CharT, _Traits>& __os,
+    std::basic_ostream<_CharT, _Traits>&
+    operator<<(std::basic_ostream<_CharT, _Traits>& __os,
 	       const local_time<_Duration>& __tp)
     {
       return __os;
     }
 
   template<typename _CharT, typename _Traits>
-    basic_ostream<_CharT, _Traits>&
-    operator<<(basic_ostream<_CharT, _Traits>& __os,
+    std::basic_ostream<_CharT, _Traits>&
+    operator<<(std::basic_ostream<_CharT, _Traits>& __os,
 	       const sys_days& __dp)
     {
       __os << year_month_day{__dp};
@@ -104,32 +106,32 @@ namespace chrono {
     }
 
   template<typename _CharT, typename _Traits, typename _Duration>
-    basic_ostream<_CharT, _Traits>&
-    operator<<(basic_ostream<_CharT, _Traits>& __os,
+    std::basic_ostream<_CharT, _Traits>&
+    operator<<(std::basic_ostream<_CharT, _Traits>& __os,
 	       const utc_time<_Duration>& __t)
     {
       return __os;
     }
 
   template<typename _CharT, typename _Traits, typename _Duration>
-    basic_ostream<_CharT, _Traits>&
-    operator<<(basic_ostream<_CharT, _Traits>& __os,
+    std::basic_ostream<_CharT, _Traits>&
+    operator<<(std::basic_ostream<_CharT, _Traits>& __os,
 	       const tai_time<_Duration>& __t)
     {
       return __os;
     }
 
   template<typename _CharT, typename _Traits, typename _Duration>
-    basic_ostream<_CharT, _Traits>&
-    operator<<(basic_ostream<_CharT, _Traits>& __os,
+    std::basic_ostream<_CharT, _Traits>&
+    operator<<(std::basic_ostream<_CharT, _Traits>& __os,
 	       const gps_time<_Duration>& __t)
     {
       return __os;
     }
 
   template<typename _CharT, typename _Traits, typename _Duration>
-    basic_ostream<_CharT, _Traits>&
-    operator<<(basic_ostream<_CharT, _Traits>& __os,
+    std::basic_ostream<_CharT, _Traits>&
+    operator<<(std::basic_ostream<_CharT, _Traits>& __os,
 	       const file_time<_Duration>& __tp)
     {
       return __os;
@@ -138,49 +140,50 @@ namespace chrono {
   // TO_STREAM
 
   template<typename _CharT, typename _Traits, typename _Duration>
-    basic_ostream<_CharT, _Traits>&
-    to_stream(basic_ostream<_CharT, _Traits>& __os, const _CharT* __fmt,
+    std::basic_ostream<_CharT, _Traits>&
+    to_stream(std::basic_ostream<_CharT, _Traits>& __os, const _CharT* __fmt,
 	      const sys_time<_Duration>& __tp)
     {
       return __os;
     }
 
   template<typename _CharT, typename _Traits, typename _Duration>
-    basic_ostream<_CharT, _Traits>&
-    to_stream(basic_ostream<_CharT, _Traits>& __os, const _CharT* __fmt,
+    std::basic_ostream<_CharT, _Traits>&
+    to_stream(std::basic_ostream<_CharT, _Traits>& __os, const _CharT* __fmt,
 	      const local_time<_Duration>& __tp,
-	      const string* __abbrev = nullptr,
-	      const seconds* __offset_sec = nullptr)
+	      const string* __abbrev,
+	      const seconds* __offset_sec)
     {
       return __os;
     }
 
   template<typename _CharT, typename _Traits, typename _Duration>
-    basic_ostream<_CharT, _Traits>&
-    to_stream(basic_ostream<_CharT, _Traits>& __os, const _CharT* __fmt,
+    std::basic_ostream<_CharT, _Traits>&
+    to_stream(std::basic_ostream<_CharT, _Traits>& __os, const _CharT* __fmt,
 	      const utc_time<_Duration>& __tp)
     {
       return __os;
     }
 
   template<typename _CharT, typename _Traits, typename _Duration>
-    basic_ostream<_CharT, _Traits>&
-    to_stream(basic_ostream<_CharT, _Traits>& __os, const _CharT* __fmt,
+    std::basic_ostream<_CharT, _Traits>&
+    to_stream(std::basic_ostream<_CharT, _Traits>& __os, const _CharT* __fmt,
 	      const tai_time<_Duration>& __tp)
     {
       return __os;
     }
 
   template<typename _CharT, typename _Traits, typename _Duration>
-    basic_ostream<_CharT, _Traits>&
-    to_stream(basic_ostream<_CharT, _Traits>& __os, const _CharT* __fmt,
+    std::basic_ostream<_CharT, _Traits>&
+    to_stream(std::basic_ostream<_CharT, _Traits>& __os, const _CharT* __fmt,
 	      const gps_time<_Duration>& __tp)
     {
       return __os;
+    }
 
   template<typename _CharT, typename _Traits, typename _Duration>
-    basic_ostream<_CharT, _Traits>&
-    to_stream(basic_ostream<_CharT, _Traits>& __os, const _CharT* __fmt,
+    std::basic_ostream<_CharT, _Traits>&
+    to_stream(std::basic_ostream<_CharT, _Traits>& __os, const _CharT* __fmt,
 	      const file_time<_Duration>& __tp)
     {
       return __os;
@@ -193,8 +196,8 @@ namespace chrono {
     basic_istream<_CharT, _Traits>&
     from_stream(basic_istream<_CharT, _Traits>& __is, const _CharT* __fmt,
 		sys_time<_Duration>& __tp,
-		basic_string<_CharT, _Traits, _Alloc>* __abbrev = nullptr,
-		minutes* __offset = nullptr)
+		basic_string<_CharT, _Traits, _Alloc>* __abbrev,
+		minutes* __offset)
     {
       return __is;
     }
@@ -204,8 +207,8 @@ namespace chrono {
     basic_istream<_CharT, _Traits>&
     from_stream(basic_istream<_CharT, _Traits>& __is, const _CharT* __fmt,
 		local_time<_Duration>& __tp,
-		basic_string<_CharT, _Traits, _Alloc>* __abbrev = nullptr,
-		minutes* __offset = nullptr)
+		basic_string<_CharT, _Traits, _Alloc>* __abbrev,
+		minutes* __offset)
     {
       return __is;
     }
@@ -215,8 +218,8 @@ namespace chrono {
     basic_istream<_CharT, _Traits>&
     from_stream(basic_istream<_CharT, _Traits>& __is, const _CharT* __fmt,
 		utc_time<_Duration>& __tp,
-		basic_string<_CharT, _Traits, _Alloc>* __abbrev = nullptr,
-		minutes* __offset = nullptr)
+		basic_string<_CharT, _Traits, _Alloc>* __abbrev,
+		minutes* __offset)
     {
       return __is;
     }
@@ -226,8 +229,8 @@ namespace chrono {
     basic_istream<_CharT, _Traits>&
     from_stream(basic_istream<_CharT, _Traits>& __is, const _CharT* __fmt,
 		tai_time<_Duration>& __tp,
-		basic_string<_CharT, _Traits, _Alloc>* __abbrev = nullptr,
-		minutes* __offset = nullptr)
+		basic_string<_CharT, _Traits, _Alloc>* __abbrev,
+		minutes* __offset)
     {
       return __is;
     }
@@ -237,8 +240,8 @@ namespace chrono {
     basic_istream<_CharT, _Traits>&
     from_stream(basic_istream<_CharT, _Traits>& __is, const _CharT* __fmt,
 		gps_time<_Duration>& __tp,
-		basic_string<_CharT, _Traits, _Alloc>* __abbrev = nullptr,
-		minutes* __offset = nullptr)
+		basic_string<_CharT, _Traits, _Alloc>* __abbrev,
+		minutes* __offset)
     {
       return __is;
     }
@@ -248,8 +251,8 @@ namespace chrono {
     basic_istream<_CharT, _Traits>&
     from_stream(basic_istream<_CharT, _Traits>& __is, const _CharT* __fmt,
 		file_time<_Duration>& __tp,
-		basic_string<_CharT, _Traits, _Alloc>* __abbrev = nullptr,
-		minutes* __offset = nullptr)
+		basic_string<_CharT, _Traits, _Alloc>* __abbrev,
+		minutes* __offset)
     {
       return __is;
     }
@@ -257,15 +260,15 @@ namespace chrono {
   // DAY
 
   template<typename _CharT, typename _Traits>
-    basic_ostream<_CharT, _Traits>&
-    operator<<(basic_ostream<_CharT, _Traits>& __os, const day& __d)
+    std::basic_ostream<_CharT, _Traits>&
+    operator<<(std::basic_ostream<_CharT, _Traits>& __os, const day& __d)
     {
       return __os;
     }
 
   template<typename _CharT, typename _Traits>
-    basic_ostream<_CharT, _Traits>&
-    to_stream(basic_ostream<_CharT, _Traits>& __os,
+    std::basic_ostream<_CharT, _Traits>&
+    to_stream(std::basic_ostream<_CharT, _Traits>& __os,
 	      const _CharT* __fmt, const day& __d)
     {
       return __os;
@@ -276,8 +279,8 @@ namespace chrono {
     basic_istream<_CharT, _Traits>&
     from_stream(basic_istream<_CharT, _Traits>& __is, const _CharT* __fmt,
 		day& __d,
-		basic_string<_CharT, _Traits, _Alloc>* __abbrev = nullptr,
-		minutes* __offset = nullptr)
+		basic_string<_CharT, _Traits, _Alloc>* __abbrev,
+		minutes* __offset)
     {
       return __is;
     }
@@ -285,8 +288,8 @@ namespace chrono {
   // MONTH
 
   template<typename _CharT, typename _Traits>
-    basic_ostream<_CharT, _Traits>&
-    operator<<(basic_ostream<_CharT, _Traits>& __os, const month& __m)
+    std::basic_ostream<_CharT, _Traits>&
+    operator<<(std::basic_ostream<_CharT, _Traits>& __os, const month& __m)
     {
       if (__m.ok())
 	{
@@ -299,8 +302,8 @@ namespace chrono {
     }
 
   template<typename _CharT, typename _Traits>
-    basic_ostream<_CharT, _Traits>&
-    to_stream(basic_ostream<_CharT, _Traits>& __os,
+    std::basic_ostream<_CharT, _Traits>&
+    to_stream(std::basic_ostream<_CharT, _Traits>& __os,
 	      const _CharT* __fmt, const month& __m)
     {
       return __os;
@@ -311,8 +314,8 @@ namespace chrono {
     basic_istream<_CharT, _Traits>&
     from_stream(basic_istream<_CharT, _Traits>& __is, const _CharT* __fmt,
 		month& __m,
-		basic_string<_CharT, _Traits, _Alloc>* __abbrev = nullptr,
-		minutes* __offset = nullptr)
+		basic_string<_CharT, _Traits, _Alloc>* __abbrev,
+		minutes* __offset)
     {
       return __is;
     }
@@ -320,15 +323,15 @@ namespace chrono {
   // YEAR
 
   template<typename _CharT, typename _Traits>
-    basic_ostream<_CharT, _Traits>&
-    operator<<(basic_ostream<_CharT, _Traits>& __os, const year& __y)
+    std::basic_ostream<_CharT, _Traits>&
+    operator<<(std::basic_ostream<_CharT, _Traits>& __os, const year& __y)
     {
       return __os;
     }
 
   template<typename _CharT, typename _Traits>
-    basic_ostream<_CharT, _Traits>&
-    to_stream(basic_ostream<_CharT, _Traits>& __os,
+    std::basic_ostream<_CharT, _Traits>&
+    to_stream(std::basic_ostream<_CharT, _Traits>& __os,
 	      const _CharT* __fmt, const year& __y)
     {
       return __os;
@@ -339,8 +342,8 @@ namespace chrono {
     basic_istream<_CharT, _Traits>&
     from_stream(basic_istream<_CharT, _Traits>& __is, const _CharT* __fmt,
 		year& __y,
-		basic_string<_CharT, _Traits, _Alloc>* __abbrev = nullptr,
-		minutes* __offset = nullptr)
+		basic_string<_CharT, _Traits, _Alloc>* __abbrev,
+		minutes* __offset)
     {
       return __is;
     }
@@ -348,8 +351,8 @@ namespace chrono {
   // WEEKDAY
 
   template<typename _CharT, typename _Traits>
-    basic_ostream<_CharT, _Traits>&
-    operator<<(basic_ostream<_CharT, _Traits>& __os, const weekday& __wd)
+    std::basic_ostream<_CharT, _Traits>&
+    operator<<(std::basic_ostream<_CharT, _Traits>& __os, const weekday& __wd)
     {
       if (__wd.ok())
 	{
@@ -357,13 +360,13 @@ namespace chrono {
 	  __os << format(__fmt, __wd);
 	}
       else
-	os << "invalid weekday: " << static_cast<unsigned>(wd.wd_);
+	__os << "invalid weekday: " << static_cast<unsigned>(__wd._M_wd);
       return __os;
     }
 
   template<typename _CharT, typename _Traits>
-    basic_ostream<_CharT, _Traits>&
-    to_stream(basic_ostream<_CharT, _Traits>& __os, const _CharT* __fmt,
+    std::basic_ostream<_CharT, _Traits>&
+    to_stream(std::basic_ostream<_CharT, _Traits>& __os, const _CharT* __fmt,
 	      const weekday& __wd)
     {
       return __os;
@@ -374,8 +377,8 @@ namespace chrono {
     basic_istream<_CharT, _Traits>&
     from_stream(basic_istream<_CharT, _Traits>& __is, const _CharT* __fmt,
 		weekday& __wd,
-		basic_string<_CharT, _Traits, _Alloc>* __abbrev = nullptr,
-		minutes* __offset = nullptr)
+		basic_string<_CharT, _Traits, _Alloc>* __abbrev,
+		minutes* __offset)
     {
       return __is;
     }
@@ -383,8 +386,8 @@ namespace chrono {
   // WEEKDAY_INDEXED
 
   template<typename _CharT, typename _Traits>
-    basic_ostream<_CharT, _Traits>&
-    operator<<(basic_ostream<_CharT, _Traits>& __os,
+    std::basic_ostream<_CharT, _Traits>&
+    operator<<(std::basic_ostream<_CharT, _Traits>& __os,
 	       const weekday_indexed& __wdi)
     {
       return __os;
@@ -393,8 +396,8 @@ namespace chrono {
   // WEEKDAY_LAST
 
   template<typename _CharT, typename _Traits>
-    basic_ostream<_CharT, _Traits>&
-    operator<<(basic_ostream<_CharT, _Traits>& __os,
+    std::basic_ostream<_CharT, _Traits>&
+    operator<<(std::basic_ostream<_CharT, _Traits>& __os,
 	       const weekday_last& __wdl)
     {
       return __os << __wdl.weekday() << "[last]";
@@ -403,15 +406,15 @@ namespace chrono {
   // MONTH_DAY
 
   template<typename _CharT, typename _Traits>
-    basic_ostream<_CharT, _Traits>&
-    operator<<(basic_ostream<_CharT, _Traits>& __os, const month_day& __md)
+    std::basic_ostream<_CharT, _Traits>&
+    operator<<(std::basic_ostream<_CharT, _Traits>& __os, const month_day& __md)
     {
       return __os << __md.month() << '/' << __md.day();
     }
 
   template<typename _CharT, typename _Traits>
-    basic_ostream<_CharT, _Traits>&
-    to_stream(basic_ostream<_CharT, _Traits>& __os,
+    std::basic_ostream<_CharT, _Traits>&
+    to_stream(std::basic_ostream<_CharT, _Traits>& __os,
 	      const _CharT* __fmt, const month_day& __md)
     {
       return __os;
@@ -422,8 +425,8 @@ namespace chrono {
     basic_istream<_CharT, _Traits>&
     from_stream(basic_istream<_CharT, _Traits>& __is, const _CharT* __fmt,
 		month_day& __md,
-		basic_string<_CharT, _Traits, _Alloc>* __abbrev = nullptr,
-		minutes* __offset = nullptr)
+		basic_string<_CharT, _Traits, _Alloc>* __abbrev,
+		minutes* __offset)
     {
       return __is;
     }
@@ -431,8 +434,8 @@ namespace chrono {
   // MONTH_DAY_LAST
 
   template<typename _CharT, typename _Traits>
-    basic_ostream<_CharT, _Traits>&
-    operator<<(basic_ostream<_CharT, _Traits>& __os,
+    std::basic_ostream<_CharT, _Traits>&
+    operator<<(std::basic_ostream<_CharT, _Traits>& __os,
 	       const month_day_last& __mdl)
     {
       return __os << __mdl.month() << "/last";
@@ -441,8 +444,8 @@ namespace chrono {
   // MONTH_WEEKDAY
 
   template<typename _CharT, typename _Traits>
-    basic_ostream<_CharT, _Traits>&
-    operator<<(basic_ostream<_CharT, _Traits>& __os,
+    std::basic_ostream<_CharT, _Traits>&
+    operator<<(std::basic_ostream<_CharT, _Traits>& __os,
 	       const month_weekday& __mwd)
     {
       return __os << __mwd.month() << '/' << __mwd.weekday_indexed();
@@ -451,8 +454,8 @@ namespace chrono {
   // MONTH_WEEKDAY_LAST
 
   template<typename _CharT, typename _Traits>
-    basic_ostream<_CharT, _Traits>&
-    operator<<(basic_ostream<_CharT, _Traits>& __os,
+    std::basic_ostream<_CharT, _Traits>&
+    operator<<(std::basic_ostream<_CharT, _Traits>& __os,
 	       const month_weekday_last& __mwdl)
     {
       return __os << __mwdl.month() << '/' << __mwdl.weekday_last();
@@ -461,16 +464,16 @@ namespace chrono {
   // YEAR_MONTH
 
   template<typename _CharT, typename _Traits>
-    basic_ostream<_CharT, _Traits>&
-    operator<<(basic_ostream<_CharT, _Traits>& __os,
+    std::basic_ostream<_CharT, _Traits>&
+    operator<<(std::basic_ostream<_CharT, _Traits>& __os,
 	       const year_month& __ym)
     {
       return __os << __ym.year() << '/' << __ym.month();
     }
 
   template<typename _CharT, typename _Traits>
-    basic_ostream<_CharT, _Traits>&
-    to_stream(basic_ostream<_CharT, _Traits>& __os,
+    std::basic_ostream<_CharT, _Traits>&
+    to_stream(std::basic_ostream<_CharT, _Traits>& __os,
 	      const _CharT* __fmt, const year_month& __ym)
     {
       return __os;
@@ -481,8 +484,8 @@ namespace chrono {
     basic_istream<_CharT, _Traits>&
     from_stream(basic_istream<_CharT, _Traits>& __is, const _CharT* __fmt,
 		year_month& __ym,
-		basic_string<_CharT, _Traits, _Alloc>* __abbrev = nullptr,
-		minutes* __offset = nullptr)
+		basic_string<_CharT, _Traits, _Alloc>* __abbrev,
+		minutes* __offset)
     {
       return __is;
     }
@@ -490,16 +493,16 @@ namespace chrono {
   // YEAR_MONTH_DAY
 
   template<typename _CharT, typename _Traits>
-    basic_ostream<_CharT, _Traits>&
-    operator<<(basic_ostream<_CharT, _Traits>& __os,
+    std::basic_ostream<_CharT, _Traits>&
+    operator<<(std::basic_ostream<_CharT, _Traits>& __os,
 	       const year_month_day& __ymd)
     {
       return __os;
     }
 
   template<typename _CharT, typename _Traits>
-    basic_ostream<_CharT, _Traits>&
-    to_stream(basic_ostream<_CharT, _Traits>& __os,
+    std::basic_ostream<_CharT, _Traits>&
+    to_stream(std::basic_ostream<_CharT, _Traits>& __os,
 	      const _CharT* __fmt, const year_month_day& __ymd)
     {
       return __os;
@@ -510,8 +513,8 @@ namespace chrono {
     basic_istream<_CharT, _Traits>&
     from_stream(basic_istream<_CharT, _Traits>& __is, const _CharT* __fmt,
 		year_month_day& __ymd,
-		basic_string<_CharT, _Traits, _Alloc>* __abbrev = nullptr,
-		minutes* __offset = nullptr)
+		basic_string<_CharT, _Traits, _Alloc>* __abbrev,
+		minutes* __offset)
     {
       return __is;
     }
@@ -519,8 +522,8 @@ namespace chrono {
   // YEAR_MONTH_DAY_LAST
 
   template<typename _CharT, typename _Traits>
-    basic_ostream<_CharT, _Traits>&
-    operator<<(basic_ostream<_CharT, _Traits>& __os,
+    std::basic_ostream<_CharT, _Traits>&
+    operator<<(std::basic_ostream<_CharT, _Traits>& __os,
 	       const year_month_day_last& __ymdl)
     {
       return __os << __ymdl.year() << '/' << __ymdl.month_day_last();
@@ -529,8 +532,8 @@ namespace chrono {
   // YEAR_MONTH_WEEKDAY
 
   template<typename _CharT, typename _Traits>
-    basic_ostream<_CharT, _Traits>&
-    operator<<(basic_ostream<_CharT, _Traits>& __os,
+    std::basic_ostream<_CharT, _Traits>&
+    operator<<(std::basic_ostream<_CharT, _Traits>& __os,
 	       const year_month_weekday& __ymwdi)
     {
       return __os << __ymwdi.year()
@@ -541,8 +544,8 @@ namespace chrono {
   // YEAR_MONTH_WEEKDAY_LAST
 
   template<typename _CharT, typename _Traits>
-    basic_ostream<_CharT, _Traits>&
-    operator<<(basic_ostream<_CharT, _Traits>& __os,
+    std::basic_ostream<_CharT, _Traits>&
+    operator<<(std::basic_ostream<_CharT, _Traits>& __os,
 	       const year_month_weekday_last& __ymwdl)
     {
       return __os <<  __ymwdl.year()
@@ -553,29 +556,29 @@ namespace chrono {
   // CALENDAR COMPOSITION OPERATORS
 
   template<typename _CharT, typename _Traits>
-    basic_ostream<_CharT, _Traits>&
-    operator<<(basic_ostream<_CharT, _Traits>& __os,
+    std::basic_ostream<_CharT, _Traits>&
+    operator<<(std::basic_ostream<_CharT, _Traits>& __os,
 	       const time_of_day<hours>& __t)
     {
       return __os;
     }
 
   template<typename _CharT, typename _Traits>
-    basic_ostream<_CharT, _Traits>&
-    operator<<(basic_ostream<_CharT, _Traits>& __os,
+    std::basic_ostream<_CharT, _Traits>&
+    operator<<(std::basic_ostream<_CharT, _Traits>& __os,
 	       const time_of_day<minutes>& __t);
 
   template<typename _CharT, typename _Traits>
-    basic_ostream<_CharT, _Traits>&
-    operator<<(basic_ostream<_CharT, _Traits>& __os,
+    std::basic_ostream<_CharT, _Traits>&
+    operator<<(std::basic_ostream<_CharT, _Traits>& __os,
 	       const time_of_day<seconds>& __t)
     {
       return __os;
     }
 
   template<typename _CharT, typename _Traits, typename _Rep, typename _Period>
-    basic_ostream<_CharT, _Traits>&
-    operator<<(basic_ostream<_CharT, _Traits>& __os,
+    std::basic_ostream<_CharT, _Traits>&
+    operator<<(std::basic_ostream<_CharT, _Traits>& __os,
 	       const time_of_day<duration<_Rep, _Period>>& __t)
     {
       return __os;
@@ -585,16 +588,17 @@ namespace chrono {
 
   struct sys_info;
   template<typename _CharT, typename _Traits>
-    basic_ostream<_CharT, _Traits>&
-    operator<<(basic_ostream<_CharT, _Traits>& __os, const sys_info& __si)
+    std::basic_ostream<_CharT, _Traits>&
+    operator<<(std::basic_ostream<_CharT, _Traits>& __os, const sys_info& __si)
     {
       return __os;
     }
 
   struct local_info;
   template<typename _CharT, typename _Traits>
-    basic_ostream<_CharT, _Traits>&
-    operator<<(basic_ostream<_CharT, _Traits>& __os, const local_info& __li)
+    std::basic_ostream<_CharT, _Traits>&
+    operator<<(std::basic_ostream<_CharT, _Traits>& __os,
+		const local_info& __li)
     {
       return __os;
     }
@@ -603,8 +607,8 @@ namespace chrono {
 
   template<typename _CharT, typename _Traits,
 	   typename _Duration, typename _TimeZonePtr>
-    basic_ostream<_CharT, _Traits>&
-    operator<<(basic_ostream<_CharT, _Traits>& __os,
+    std::basic_ostream<_CharT, _Traits>&
+    operator<<(std::basic_ostream<_CharT, _Traits>& __os,
 	       const zoned_time<_Duration, _TimeZonePtr>& __t)
     {
       return __os;
@@ -612,8 +616,8 @@ namespace chrono {
 
   template<typename _CharT, typename _Traits,
 	   typename _Duration, typename _TimeZonePtr>
-    basic_ostream<_CharT, _Traits>&
-    to_stream(basic_ostream<_CharT, _Traits>& __os, const _CharT* __fmt,
+    std::basic_ostream<_CharT, _Traits>&
+    to_stream(std::basic_ostream<_CharT, _Traits>& __os, const _CharT* __fmt,
 	      const zoned_time<_Duration, _TimeZonePtr>& __tp)
     {
       return __os;
@@ -622,5 +626,5 @@ namespace chrono {
 } // namespace chrono
 } // namespace std
 
-#include "date_io.tcc"
+#endif // _GLIBCXX_DATE_IO_TCC
 

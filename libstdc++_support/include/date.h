@@ -1,11 +1,12 @@
+#ifndef _GLIBCXX_DATE_H
+#define _GLIBCXX_DATE_H 1
 
-#include <chrono>
+#pragma GCC system_header
+
 #include <ostream>
 #include <vector>
 #include <string>
 #include <atomic>
-
-#pragma GCC system_header
 
 // This could use a dose of <=> ...
 
@@ -53,7 +54,7 @@ namespace chrono {
     basic_istream<_CharT, _Traits>&
     from_stream(basic_istream<_CharT, _Traits>& __is, const _CharT* __fmt,
 	        duration<_Rep, _Period>& __d,
-	        basic_string<_CharT, _Traits, _Alloc>* __abbrev = nullptr,
+	        std::basic_string<_CharT, _Traits, _Alloc>* __abbrev = nullptr,
 	        minutes* __offset = nullptr);
 
   // TYPEDEFS
@@ -546,7 +547,7 @@ namespace chrono {
     basic_istream<_CharT, _Traits>&
     from_stream(basic_istream<_CharT, _Traits>& __is, const _CharT* __fmt,
 		sys_time<_Duration>& __tp,
-		basic_string<_CharT, _Traits, _Alloc>* __abbrev = nullptr,
+		std::basic_string<_CharT, _Traits, _Alloc>* __abbrev = nullptr,
 		minutes* __offset = nullptr);
 
   template<typename _CharT, typename _Traits, typename _Duration,
@@ -554,7 +555,7 @@ namespace chrono {
     basic_istream<_CharT, _Traits>&
     from_stream(basic_istream<_CharT, _Traits>& __is, const _CharT* __fmt,
 		local_time<_Duration>& __tp,
-		basic_string<_CharT, _Traits, _Alloc>* __abbrev = nullptr,
+		std::basic_string<_CharT, _Traits, _Alloc>* __abbrev = nullptr,
 		minutes* __offset = nullptr);
 
   template<typename _CharT, typename _Traits, typename _Duration,
@@ -562,7 +563,7 @@ namespace chrono {
     basic_istream<_CharT, _Traits>&
     from_stream(basic_istream<_CharT, _Traits>& __is, const _CharT* __fmt,
 		utc_time<_Duration>& __tp,
-		basic_string<_CharT, _Traits, _Alloc>* __abbrev = nullptr,
+		std::basic_string<_CharT, _Traits, _Alloc>* __abbrev = nullptr,
 		minutes* __offset = nullptr);
 
   template<typename _CharT, typename _Traits, typename _Duration,
@@ -570,7 +571,7 @@ namespace chrono {
     basic_istream<_CharT, _Traits>&
     from_stream(basic_istream<_CharT, _Traits>& __is, const _CharT* __fmt,
 		tai_time<_Duration>& __tp,
-		basic_string<_CharT, _Traits, _Alloc>* __abbrev = nullptr,
+		std::basic_string<_CharT, _Traits, _Alloc>* __abbrev = nullptr,
 		minutes* __offset = nullptr);
 
   template<typename _CharT, typename _Traits, typename _Duration,
@@ -578,7 +579,7 @@ namespace chrono {
     basic_istream<_CharT, _Traits>&
     from_stream(basic_istream<_CharT, _Traits>& __is, const _CharT* __fmt,
 		gps_time<_Duration>& __tp,
-		basic_string<_CharT, _Traits, _Alloc>* __abbrev = nullptr,
+		std::basic_string<_CharT, _Traits, _Alloc>* __abbrev = nullptr,
 		minutes* __offset = nullptr);
 
   template<typename _CharT, typename _Traits, typename _Duration,
@@ -586,7 +587,7 @@ namespace chrono {
     basic_istream<_CharT, _Traits>&
     from_stream(basic_istream<_CharT, _Traits>& __is, const _CharT* __fmt,
 		file_time<_Duration>& __tp,
-		basic_string<_CharT, _Traits, _Alloc>* __abbrev = nullptr,
+		std::basic_string<_CharT, _Traits, _Alloc>* __abbrev = nullptr,
 		minutes* __offset = nullptr);
 
   // CALENDRICAL TYPES
@@ -716,7 +717,7 @@ namespace chrono {
     basic_istream<_CharT, _Traits>&
     from_stream(basic_istream<_CharT, _Traits>& __is, const _CharT* __fmt,
 		day& __d,
-		basic_string<_CharT, _Traits, _Alloc>* __abbrev = nullptr,
+		std::basic_string<_CharT, _Traits, _Alloc>* __abbrev = nullptr,
 		minutes* __offset = nullptr);
 
   // MONTH
@@ -814,7 +815,8 @@ namespace chrono {
 
   constexpr month
   operator+(const month& __x, const months& __y) noexcept
-  { return month(modulo<unsigned char>(static_cast<long long>(unsigned{__x}) + (__y.count() - 1), 12) + 1); }
+  { return month(modulo<unsigned char>(static_cast<long long>(unsigned{__x})
+						+ (__y.count() - 1), 12) + 1); }
 
   constexpr month
   operator+(const months& __x,  const month& __y) noexcept
@@ -842,7 +844,7 @@ namespace chrono {
     basic_istream<_CharT, _Traits>&
     from_stream(basic_istream<_CharT, _Traits>& __is, const _CharT* __fmt,
 		month& __m,
-		basic_string<_CharT, _Traits, _Alloc>* __abbrev = nullptr,
+		std::basic_string<_CharT, _Traits, _Alloc>* __abbrev = nullptr,
 		minutes* __offset = nullptr);
 
   // YEAR
@@ -984,7 +986,7 @@ namespace chrono {
     basic_istream<_CharT, _Traits>&
     from_stream(basic_istream<_CharT, _Traits>& __is, const _CharT* __fmt,
 		year& __y,
-		basic_string<_CharT, _Traits, _Alloc>* __abbrev = nullptr,
+		std::basic_string<_CharT, _Traits, _Alloc>* __abbrev = nullptr,
 		minutes* __offset = nullptr);
 
   // WEEKDAY
@@ -1090,7 +1092,8 @@ namespace chrono {
 
   constexpr weekday
   operator+(const weekday& __x, const days& __y) noexcept
-  { return weekday(modulo<unsigned char>(static_cast<long long>(unsigned{__x}) + __y.count(), 7)); }
+  { return weekday(modulo<unsigned char>(static_cast<long long>(unsigned{__x})
+							+ __y.count(), 7)); }
 
   constexpr weekday
   operator+(const days& __x, const weekday& __y) noexcept
@@ -1122,7 +1125,7 @@ namespace chrono {
     basic_istream<_CharT, _Traits>&
     from_stream(basic_istream<_CharT, _Traits>& __is, const _CharT* __fmt,
 		weekday& __wd,
-		basic_string<_CharT, _Traits, _Alloc>* __abbrev = nullptr,
+		std::basic_string<_CharT, _Traits, _Alloc>* __abbrev = nullptr,
 		minutes* __offset = nullptr);
 
   // WEEKDAY_INDEXED
@@ -1290,7 +1293,7 @@ namespace chrono {
     basic_istream<_CharT, _Traits>&
     from_stream(basic_istream<_CharT, _Traits>& __is, const _CharT* __fmt,
 		month_day& __md,
-		basic_string<_CharT, _Traits, _Alloc>* __abbrev = nullptr,
+		std::basic_string<_CharT, _Traits, _Alloc>* __abbrev = nullptr,
 		minutes* __offset = nullptr);
 
   // MONTH_DAY_LAST
@@ -1576,7 +1579,7 @@ namespace chrono {
     basic_istream<_CharT, _Traits>&
     from_stream(basic_istream<_CharT, _Traits>& __is, const _CharT* __fmt,
 		year_month& __ym,
-		basic_string<_CharT, _Traits, _Alloc>* __abbrev = nullptr,
+		std::basic_string<_CharT, _Traits, _Alloc>* __abbrev = nullptr,
 		minutes* __offset = nullptr);
 
   // YEAR_MONTH_DAY
@@ -1764,11 +1767,12 @@ namespace chrono {
     to_stream(basic_ostream<_CharT, _Traits>& __os,
 	      const _CharT* __fmt, const year_month_day& __ymd);
 
-  template<typename _CharT, typename _Traits, typename _Alloc = allocator<_CharT>>
+  template<typename _CharT, typename _Traits,
+	   typename _Alloc = allocator<_CharT>>
     basic_istream<_CharT, _Traits>&
     from_stream(basic_istream<_CharT, _Traits>& __is, const _CharT* __fmt,
 		year_month_day& __ymd,
-		basic_string<_CharT, _Traits, _Alloc>* __abbrev = nullptr,
+		std::basic_string<_CharT, _Traits, _Alloc>* __abbrev = nullptr,
 		minutes* __offset = nullptr);
 
   // YEAR_MONTH_DAY_LAST
@@ -1833,9 +1837,9 @@ namespace chrono {
     day() const noexcept
     {
       return this->month() != chrono::month{2}
-	  || !this->_M_y.is_leap()
-	   ? chrono::day{__detail::__last_day[unsigned(this->_M_mdl.month()) - 1]}
-	   : chrono::day{29};
+	|| !this->_M_y.is_leap()
+	 ? chrono::day{__detail::__last_day[unsigned(this->_M_mdl.month()) - 1]}
+	 : chrono::day{29};
     }
 
     constexpr
@@ -2750,24 +2754,24 @@ namespace chrono {
   // FORMAT
 
   template<typename _CharT, typename _Streamable>
-    basic_string<_CharT>
+    std::basic_string<_CharT>
     format(const _CharT* __fmt, const _Streamable& __s);
 
   template<typename _CharT, typename _Streamable>
-    basic_string<_CharT>
+    std::basic_string<_CharT>
     format(const locale& __loc, const _CharT* __fmt, const _Streamable& __s);
 
   template<typename _CharT, typename _Traits,
 	   typename _Alloc, typename _Streamable>
-    basic_string<_CharT, _Traits, _Alloc>
-    format(const basic_string<_CharT, _Traits, _Alloc>& __fmt,
+    std::basic_string<_CharT, _Traits, _Alloc>
+    format(const std::basic_string<_CharT, _Traits, _Alloc>& __fmt,
 	   const _Streamable& __s);
 
   template<typename _CharT, typename _Traits,
 	   typename _Alloc, typename _Streamable>
-    basic_string<_CharT, _Traits, _Alloc>
+    std::basic_string<_CharT, _Traits, _Alloc>
     format(const locale& __loc,
-	   const basic_string<_CharT, _Traits, _Alloc>& __fmt,
+	   const std::basic_string<_CharT, _Traits, _Alloc>& __fmt,
 	   const _Streamable& __s);
 
   // PARSE
@@ -2781,29 +2785,29 @@ namespace chrono {
   template<typename _CharT, typename _Traits,
 	   typename _Alloc, typename _Parsable>
     __detail::__parse_result
-    parse(const basic_string<_CharT, _Traits, _Alloc>& __format,
+    parse(const std::basic_string<_CharT, _Traits, _Alloc>& __format,
 	  _Parsable& __tp);
 
   template<typename _CharT, typename _Traits,
 	   typename _Alloc, typename _Parsable>
     __detail::__parse_result
-    parse(const basic_string<_CharT, _Traits, _Alloc>& __format,
+    parse(const std::basic_string<_CharT, _Traits, _Alloc>& __format,
 	  _Parsable& __tp,
-	  basic_string<_CharT, _Traits, _Alloc>& __abbrev);
+	  std::basic_string<_CharT, _Traits, _Alloc>& __abbrev);
 
   template<typename _CharT, typename _Traits,
 	   typename _Alloc, typename _Parsable>
     __detail::__parse_result
-    parse(const basic_string<_CharT, _Traits, _Alloc>& __format,
+    parse(const std::basic_string<_CharT, _Traits, _Alloc>& __format,
 	  _Parsable& __tp,
 	  minutes& __offset);
 
   template<typename _CharT, typename _Traits,
 	   typename _Alloc, typename _Parsable>
     __detail::__parse_result
-    parse(const basic_string<_CharT, _Traits, _Alloc>& __format,
+    parse(const std::basic_string<_CharT, _Traits, _Alloc>& __format,
 	  _Parsable& __tp,
-	  basic_string<_CharT, _Traits, _Alloc>& __abbrev,
+	  std::basic_string<_CharT, _Traits, _Alloc>& __abbrev,
 	  minutes& __offset);
 
   // LEAP
@@ -3000,3 +3004,7 @@ namespace chrono_literals
 
 } // namespace std
 
+#include "date.tcc"
+#include "date_io.tcc"
+
+#endif // _GLIBCXX_DATE_H
