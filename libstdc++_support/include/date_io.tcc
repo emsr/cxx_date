@@ -65,8 +65,8 @@ namespace chrono {
 
   template<typename _CharT, typename _Traits, typename _Rep,
 	   typename _Period, typename _Alloc = allocator<_CharT>>
-    basic_istream<_CharT, _Traits>&
-    from_stream(basic_istream<_CharT, _Traits>& __is, const _CharT* __fmt,
+    std::basic_istream<_CharT, _Traits>&
+    from_stream(std::basic_istream<_CharT, _Traits>& __is, const _CharT* __fmt,
 	        duration<_Rep, _Period>& __d,
 	        basic_string<_CharT, _Traits, _Alloc>* __abbrev,
 	        minutes* __offset)
@@ -193,8 +193,8 @@ namespace chrono {
 
   template<typename _CharT, typename _Traits, typename _Duration,
 	   typename _Alloc = allocator<_CharT>>
-    basic_istream<_CharT, _Traits>&
-    from_stream(basic_istream<_CharT, _Traits>& __is, const _CharT* __fmt,
+    std::basic_istream<_CharT, _Traits>&
+    from_stream(std::basic_istream<_CharT, _Traits>& __is, const _CharT* __fmt,
 		sys_time<_Duration>& __tp,
 		basic_string<_CharT, _Traits, _Alloc>* __abbrev,
 		minutes* __offset)
@@ -204,8 +204,8 @@ namespace chrono {
 
   template<typename _CharT, typename _Traits, typename _Duration,
 	   typename _Alloc = allocator<_CharT>>
-    basic_istream<_CharT, _Traits>&
-    from_stream(basic_istream<_CharT, _Traits>& __is, const _CharT* __fmt,
+    std::basic_istream<_CharT, _Traits>&
+    from_stream(std::basic_istream<_CharT, _Traits>& __is, const _CharT* __fmt,
 		local_time<_Duration>& __tp,
 		basic_string<_CharT, _Traits, _Alloc>* __abbrev,
 		minutes* __offset)
@@ -215,8 +215,8 @@ namespace chrono {
 
   template<typename _CharT, typename _Traits, typename _Duration,
 	   typename _Alloc = allocator<_CharT>>
-    basic_istream<_CharT, _Traits>&
-    from_stream(basic_istream<_CharT, _Traits>& __is, const _CharT* __fmt,
+    std::basic_istream<_CharT, _Traits>&
+    from_stream(std::basic_istream<_CharT, _Traits>& __is, const _CharT* __fmt,
 		utc_time<_Duration>& __tp,
 		basic_string<_CharT, _Traits, _Alloc>* __abbrev,
 		minutes* __offset)
@@ -226,8 +226,8 @@ namespace chrono {
 
   template<typename _CharT, typename _Traits, typename _Duration,
 	   typename _Alloc = allocator<_CharT>>
-    basic_istream<_CharT, _Traits>&
-    from_stream(basic_istream<_CharT, _Traits>& __is, const _CharT* __fmt,
+    std::basic_istream<_CharT, _Traits>&
+    from_stream(std::basic_istream<_CharT, _Traits>& __is, const _CharT* __fmt,
 		tai_time<_Duration>& __tp,
 		basic_string<_CharT, _Traits, _Alloc>* __abbrev,
 		minutes* __offset)
@@ -237,8 +237,8 @@ namespace chrono {
 
   template<typename _CharT, typename _Traits, typename _Duration,
 	   typename _Alloc = allocator<_CharT>>
-    basic_istream<_CharT, _Traits>&
-    from_stream(basic_istream<_CharT, _Traits>& __is, const _CharT* __fmt,
+    std::basic_istream<_CharT, _Traits>&
+    from_stream(std::basic_istream<_CharT, _Traits>& __is, const _CharT* __fmt,
 		gps_time<_Duration>& __tp,
 		basic_string<_CharT, _Traits, _Alloc>* __abbrev,
 		minutes* __offset)
@@ -248,8 +248,8 @@ namespace chrono {
 
   template<typename _CharT, typename _Traits, typename _Duration,
 	   typename _Alloc = allocator<_CharT>>
-    basic_istream<_CharT, _Traits>&
-    from_stream(basic_istream<_CharT, _Traits>& __is, const _CharT* __fmt,
+    std::basic_istream<_CharT, _Traits>&
+    from_stream(std::basic_istream<_CharT, _Traits>& __is, const _CharT* __fmt,
 		file_time<_Duration>& __tp,
 		basic_string<_CharT, _Traits, _Alloc>* __abbrev,
 		minutes* __offset)
@@ -276,8 +276,8 @@ namespace chrono {
 
   template<typename _CharT, typename _Traits,
 	   typename _Alloc = allocator<_CharT>>
-    basic_istream<_CharT, _Traits>&
-    from_stream(basic_istream<_CharT, _Traits>& __is, const _CharT* __fmt,
+    std::basic_istream<_CharT, _Traits>&
+    from_stream(std::basic_istream<_CharT, _Traits>& __is, const _CharT* __fmt,
 		day& __d,
 		basic_string<_CharT, _Traits, _Alloc>* __abbrev,
 		minutes* __offset)
@@ -311,8 +311,8 @@ namespace chrono {
 
   template<typename _CharT, typename _Traits,
 	   typename _Alloc = allocator<_CharT>>
-    basic_istream<_CharT, _Traits>&
-    from_stream(basic_istream<_CharT, _Traits>& __is, const _CharT* __fmt,
+    std::basic_istream<_CharT, _Traits>&
+    from_stream(std::basic_istream<_CharT, _Traits>& __is, const _CharT* __fmt,
 		month& __m,
 		basic_string<_CharT, _Traits, _Alloc>* __abbrev,
 		minutes* __offset)
@@ -339,8 +339,8 @@ namespace chrono {
 
   template<typename _CharT, typename _Traits,
 	   typename _Alloc = allocator<_CharT>>
-    basic_istream<_CharT, _Traits>&
-    from_stream(basic_istream<_CharT, _Traits>& __is, const _CharT* __fmt,
+    std::basic_istream<_CharT, _Traits>&
+    from_stream(std::basic_istream<_CharT, _Traits>& __is, const _CharT* __fmt,
 		year& __y,
 		basic_string<_CharT, _Traits, _Alloc>* __abbrev,
 		minutes* __offset)
@@ -374,8 +374,8 @@ namespace chrono {
 
   template<typename _CharT, typename _Traits,
 	   typename _Alloc = allocator<_CharT>>
-    basic_istream<_CharT, _Traits>&
-    from_stream(basic_istream<_CharT, _Traits>& __is, const _CharT* __fmt,
+    std::basic_istream<_CharT, _Traits>&
+    from_stream(std::basic_istream<_CharT, _Traits>& __is, const _CharT* __fmt,
 		weekday& __wd,
 		basic_string<_CharT, _Traits, _Alloc>* __abbrev,
 		minutes* __offset)
@@ -422,8 +422,8 @@ namespace chrono {
 
   template<typename _CharT, typename _Traits,
 	   typename _Alloc = allocator<_CharT>>
-    basic_istream<_CharT, _Traits>&
-    from_stream(basic_istream<_CharT, _Traits>& __is, const _CharT* __fmt,
+    std::basic_istream<_CharT, _Traits>&
+    from_stream(std::basic_istream<_CharT, _Traits>& __is, const _CharT* __fmt,
 		month_day& __md,
 		basic_string<_CharT, _Traits, _Alloc>* __abbrev,
 		minutes* __offset)
@@ -481,8 +481,8 @@ namespace chrono {
 
   template<typename _CharT, typename _Traits,
 	   typename _Alloc = allocator<_CharT>>
-    basic_istream<_CharT, _Traits>&
-    from_stream(basic_istream<_CharT, _Traits>& __is, const _CharT* __fmt,
+    std::basic_istream<_CharT, _Traits>&
+    from_stream(std::basic_istream<_CharT, _Traits>& __is, const _CharT* __fmt,
 		year_month& __ym,
 		basic_string<_CharT, _Traits, _Alloc>* __abbrev,
 		minutes* __offset)
@@ -510,8 +510,8 @@ namespace chrono {
 
   template<typename _CharT, typename _Traits,
 	   typename _Alloc = allocator<_CharT>>
-    basic_istream<_CharT, _Traits>&
-    from_stream(basic_istream<_CharT, _Traits>& __is, const _CharT* __fmt,
+    std::basic_istream<_CharT, _Traits>&
+    from_stream(std::basic_istream<_CharT, _Traits>& __is, const _CharT* __fmt,
 		year_month_day& __ymd,
 		basic_string<_CharT, _Traits, _Alloc>* __abbrev,
 		minutes* __offset)
