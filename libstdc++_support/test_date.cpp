@@ -123,6 +123,104 @@ test_year()
   static_assert(!year{2019}.is_leap());
 }
 
+constexpr void
+test_weekday()
+{
+  using namespace std::chrono;
+
+  weekday dwd{};
+  ++dwd;
+  dwd++;
+  --dwd;
+  dwd--;
+  dwd += days{3};
+  dwd -= days{3};
+
+/* Test 
+    constexpr
+    weekday(const sys_days& __dp) noexcept
+    : _M_wd(__from_days(__dp.time_since_epoch().count()))
+    { }
+
+    explicit constexpr
+    weekday(const local_days& __dp) noexcept
+    : _M_wd(__from_days(__dp.time_since_epoch().count()))
+    { }
+*/
+
+/* Test 
+    constexpr weekday_indexed
+    operator[](unsigned __index) const noexcept;
+
+    constexpr weekday_last
+    operator[](last_spec) const noexcept;
+*/
+  static_assert(weekday{3}[2].weekday() == weekday{3});
+  static_assert(weekday{3}[last].weekday() == weekday{3});
+
+  static_assert(++weekday{3} == weekday{4});
+  static_assert(weekday{3}++ == weekday{3});
+  static_assert(--weekday{3} == weekday{2});
+  static_assert(weekday{3}-- == weekday{3});
+  static_assert((weekday{3} += days{3}) == weekday{6});
+  static_assert((weekday{3} -= days{3}) == weekday{0});
+
+  static_assert(!weekday{127}.ok());
+  static_assert(weekday{0}.ok());
+  static_assert(weekday{6}.ok());
+  static_assert(weekday{7}.ok()); // Ctor wraps 7 to 0.
+  static_assert(!weekday{8}.ok());
+
+  static_assert(weekday{7} == weekday{0});
+  static_assert(!(weekday{0} == weekday{1}));
+  static_assert( (weekday{0} != weekday{2}));
+}
+
+constexpr void
+test_weekday_indexed()
+{
+  using namespace std::chrono;
+
+  weekday_indexed dwdi{};
+
+  constexpr auto wdl2 = weekday{3}[2];
+  static_assert(wdl2.weekday() == weekday{3});
+  static_assert(wdl2.index() == 2);
+
+  static_assert(!weekday_indexed{weekday{127}, 1}.ok());
+  static_assert(weekday_indexed{weekday{0}, 1}.ok());
+  static_assert(weekday_indexed{weekday{6}, 2}.ok());
+  static_assert(weekday_indexed{weekday{7}, 3}.ok()); // Weekday wraps 7 to 0.
+  static_assert(!weekday_indexed{weekday{8}, 1}.ok());
+  static_assert(!weekday_indexed{weekday{6}, 6}.ok());
+
+  static_assert(weekday{7} == weekday{0});
+  static_assert(!(weekday{0} == weekday{1}));
+  static_assert( (weekday{0} != weekday{2}));
+}
+
+constexpr void
+test_weekday_last()
+{
+  using namespace std::chrono;
+
+  constexpr auto wdl2 = weekday{3}[2];
+  static_assert(wdl2.weekday() == weekday{3});
+  static_assert(wdl2.index() == 2);
+  constexpr auto wdll = weekday{3}[last];
+  static_assert(wdll.weekday() == weekday{3});
+
+  static_assert(!weekday_last{weekday{127}}.ok());
+  static_assert(weekday_last{weekday{0}}.ok());
+  static_assert(weekday_last{weekday{6}}.ok());
+  static_assert(weekday_last{weekday{7}}.ok()); // Weekday wraps 7 to 0.
+  static_assert(!weekday_last{weekday{8}}.ok());
+
+  static_assert( (weekday_last{weekday{7}} == weekday_last{weekday{0}}));
+  static_assert(!(weekday_last{weekday{0}} == weekday_last{weekday{1}}));
+  static_assert( (weekday_last{weekday{0}} != weekday_last{weekday{2}}));
+}
+
 
 int
 main()
@@ -130,4 +228,6 @@ main()
   test_day();
   test_month();
   test_year();
+  test_weekday();
+  test_weekday_indexed();
 }
