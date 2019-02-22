@@ -16,7 +16,7 @@ namespace chrono {
   template<typename _Int>
     constexpr _Int
     modulo(_Int __num, _Int __den)
-    { return /*FIXME*/0; }
+    { return /*FIXME?*/__num % __den; }
 
   namespace __detail
   {
@@ -255,6 +255,9 @@ namespace chrono {
   constexpr year_month_weekday_last
   operator-(const year_month_weekday_last& __ymwdl,
 	    const years& __dy) noexcept;
+
+  constexpr weekday operator+(const weekday& __x, const days& __y) noexcept;
+  constexpr weekday operator-(const weekday& __x, const days& __y) noexcept;
 
   // CLOCKS
 
@@ -1058,14 +1061,14 @@ namespace chrono {
     constexpr weekday&
     operator+=(const days& __d) noexcept
     {
-      *this += __d;
+      *this = *this + __d;
       return *this;
     }
 
     constexpr weekday&
     operator-=(const days& __d) noexcept
     {
-      *this -= __d;
+      *this = *this - __d;
       return *this;
     }
 

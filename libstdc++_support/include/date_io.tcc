@@ -360,7 +360,7 @@ namespace chrono {
 	  __os << format(__fmt, __wd);
 	}
       else
-	__os << "invalid weekday: " << static_cast<unsigned>(__wd._M_wd);
+	__os << unsigned{__wd} << " is not a valid weekday";
       return __os;
     }
 
@@ -369,6 +369,7 @@ namespace chrono {
     to_stream(std::basic_ostream<_CharT, _Traits>& __os, const _CharT* __fmt,
 	      const weekday& __wd)
     {
+      __os << format(__fmt, __wd);
       return __os;
     }
 
@@ -390,6 +391,8 @@ namespace chrono {
     operator<<(std::basic_ostream<_CharT, _Traits>& __os,
 	       const weekday_indexed& __wdi)
     {
+      __os << __wdi.weekday() << "[" << __wdi.index()
+	   << (__wdi.ok() ? "]" : " is not a valid index]");
       return __os;
     }
 
