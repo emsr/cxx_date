@@ -858,7 +858,9 @@ namespace chrono {
     year() = default;
 
     explicit constexpr
-    year(int __y) noexcept;
+    year(int __y) noexcept
+    : _M_y{static_cast<short>(__y)}
+    { }
 
     static constexpr year
     min() noexcept
