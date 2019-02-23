@@ -792,6 +792,19 @@ namespace chrono {
     { return 1 <= this->_M_m && this->_M_m <= 12; }
   };
 
+  constexpr chrono::month January{1};
+  constexpr chrono::month February{2};
+  constexpr chrono::month March{3};
+  constexpr chrono::month April{4};
+  constexpr chrono::month May{5};
+  constexpr chrono::month June{6};
+  constexpr chrono::month July{7};
+  constexpr chrono::month August{8};
+  constexpr chrono::month September{9};
+  constexpr chrono::month October{10};
+  constexpr chrono::month November{11};
+  constexpr chrono::month December{12};
+
   constexpr bool
   operator==(const month& __x, const month& __y) noexcept
   { return unsigned{__x} == unsigned{__y}; }
@@ -831,7 +844,10 @@ namespace chrono {
 
   constexpr months
   operator-(const month& __x,  const month& __y) noexcept
-  { return /*FIXME*/months{0}; }
+  {
+    const auto __dm = int(unsigned(__x)) - int(unsigned(__y));
+    return months{__dm < 0 ? 12 + __dm : __dm};
+  }
 
   template<typename _CharT, typename _Traits>
     std::basic_ostream<_CharT, _Traits>&
@@ -1003,7 +1019,7 @@ namespace chrono {
     unsigned char _M_wd;
 
     constexpr static unsigned char
-    __from_days(int __d) noexcept
+    _S_from_days(int __d) noexcept
     {
       return static_cast<unsigned char>(
         unsigned(__d >= -4 ? (__d + 4) % 7 : (__d + 5) % 7 + 6));
@@ -1020,12 +1036,12 @@ namespace chrono {
 
     constexpr
     weekday(const sys_days& __dp) noexcept
-    : _M_wd(__from_days(__dp.time_since_epoch().count()))
+    : _M_wd(weekday::_S_from_days(__dp.time_since_epoch().count()))
     { }
 
     explicit constexpr
     weekday(const local_days& __dp) noexcept
-    : _M_wd(__from_days(__dp.time_since_epoch().count()))
+    : _M_wd(weekday::_S_from_days(__dp.time_since_epoch().count()))
     { }
 
     constexpr weekday&
@@ -1086,6 +1102,14 @@ namespace chrono {
     constexpr weekday_last
     operator[](last_spec) const noexcept;
   };
+
+  constexpr chrono::weekday Sunday{0};
+  constexpr chrono::weekday Monday{1};
+  constexpr chrono::weekday Tuesday{2};
+  constexpr chrono::weekday Wednesday{3};
+  constexpr chrono::weekday Thursday{4};
+  constexpr chrono::weekday Friday{5};
+  constexpr chrono::weekday Saturday{6};
 
   constexpr bool
   operator==(const weekday& __x, const weekday& __y) noexcept
@@ -1233,7 +1257,9 @@ namespace chrono {
 
     month_day() = default;
     constexpr
-    month_day(const chrono::month& __m, const chrono::day& __d) noexcept;
+    month_day(const chrono::month& __m, const chrono::day& __d) noexcept
+    : _M_m{__m}, _M_d{__d}
+    { }
 
     constexpr chrono::month
     month() const noexcept
@@ -1312,13 +1338,17 @@ namespace chrono {
   public:
 
     explicit constexpr
-    month_day_last(const chrono::month& __m) noexcept;
+    month_day_last(const chrono::month& __m) noexcept
+    : _M_m{__m}
+    { }
 
     constexpr chrono::month
-    month() const noexcept;
+    month() const noexcept
+    { return this->_M_m; }
 
     constexpr bool
-    ok() const noexcept;
+    ok() const noexcept
+    { return this->_M_m.ok(); }
   };
 
   constexpr bool
@@ -1363,7 +1393,9 @@ namespace chrono {
 
     constexpr
     month_weekday(const chrono::month& __m,
-		  const chrono::weekday_indexed& __wdi) noexcept;
+		  const chrono::weekday_indexed& __wdi) noexcept
+    : _M_m{__m}, _M_wdi{__wdi}
+    { }
 
     constexpr chrono::month
     month() const noexcept
@@ -1500,7 +1532,7 @@ namespace chrono {
 
     constexpr bool
     ok() const noexcept
-    { return this->_M_y.ok() && this->_M_y.ok(); }
+    { return this->_M_y.ok() && this->_M_m.ok(); }
   };
 
   constexpr bool
@@ -1597,23 +1629,9 @@ namespace chrono {
     chrono::month _M_m;
     chrono::day _M_d;
 
-    // Magic.
-    constexpr static year_month_day
-    __from_days(const days& __dp) noexcept
-    {
-      const auto __z = __dp.count() + 719468;
-      const auto __era = (__z >= 0 ? __z : __z - 146096) / 146097;
-      const auto __doe = static_cast<unsigned>(__z - __era * 146097);
-      const auto __yoe = (__doe - __doe / 1460 + __doe / 36524 - __doe / 146096)
-			/ 365;
-      const auto __y = static_cast<days::rep>(__yoe) + __era * 400;
-      const auto __doy = __doe - (365 * __yoe + __yoe / 4 - __yoe / 100);
-      const auto __mp = (5 * __doy + 2) / 153;
-      const auto __d = __doy - (153 * __mp + 2) / 5 + 1;
-      const auto __m = __mp < 10 ? __mp + 3 : __mp - 9;
-      return year_month_day{chrono::year(__y + (__m <= 2)),
-			    chrono::month(__m), chrono::day(__d)};
-    }
+    static constexpr year_month_day _S_from_days(const days& __dp) noexcept;
+
+    constexpr days _M_days_since_epoch() const noexcept;
 
   public:
 
@@ -1630,12 +1648,12 @@ namespace chrono {
 
     constexpr
     year_month_day(const sys_days& __dp) noexcept
-    : year_month_day(__from_days(__dp.time_since_epoch()))
+    : year_month_day(year_month_day::_S_from_days(__dp.time_since_epoch()))
     { }
 
     explicit constexpr
     year_month_day(const local_days& __dp) noexcept
-    : year_month_day(__from_days(__dp.time_since_epoch()))
+    : year_month_day(year_month_day::_S_from_days(__dp.time_since_epoch()))
     { }
 
     constexpr year_month_day&
@@ -1685,16 +1703,57 @@ namespace chrono {
     { return this->_M_d; }
 
     constexpr
-    operator sys_days() const noexcept;
+    operator sys_days() const noexcept
+    { return sys_days{this->_M_days_since_epoch()}; }
 
     explicit constexpr
     operator local_days() const noexcept
-    { return local_days{sys_days{*this}.time_since_epoch()}; }
+    { return local_days{this->_M_days_since_epoch()}; }
 
     constexpr bool
     ok() const noexcept
-    { return this->_M_y.ok() && this->_M_y.ok() && this->_M_d.ok(); }
+    {
+      return this->_M_y.ok() && this->_M_m.ok() && this->_M_d.ok()
+	  && unsigned(this->_M_d)
+		<= __detail::__days_per_month[unsigned(this->_M_m) - 1];
+    }
   };
+
+  // Construct from days since 1970/01/01. Magic.
+  inline constexpr year_month_day
+  year_month_day::_S_from_days(const days& __dp) noexcept
+  {
+    const auto __z = __dp.count() + 719468;
+    const auto __era = (__z >= 0 ? __z : __z - 146096) / 146097;
+    const auto __doe = static_cast<unsigned>(__z - __era * 146097);
+    const auto __yoe = (__doe - __doe / 1460 + __doe / 36524 - __doe / 146096)
+		      / 365;
+    const auto __y = static_cast<days::rep>(__yoe) + __era * 400;
+    const auto __doy = __doe - (365 * __yoe + __yoe / 4 - __yoe / 100);
+    const auto __mp = (5 * __doy + 2) / 153;
+    const auto __d = __doy - (153 * __mp + 2) / 5 + 1;
+    const auto __m = __mp < 10 ? __mp + 3 : __mp - 9;
+    return year_month_day{chrono::year(__y + (__m <= 2)),
+			  chrono::month(__m), chrono::day(__d)};
+  }
+
+  // Days since 1970/01/01. Magic.
+  inline constexpr days
+  year_month_day::_M_days_since_epoch() const noexcept
+  {
+    const auto __y = static_cast<int>(this->_M_y) - (this->_M_m <= February);
+    const auto __m = static_cast<unsigned>(this->_M_m);
+    const auto __d = static_cast<unsigned>(this->_M_d);
+    const auto __era = (__y >= 0 ? __y : __y - 399) / 400;
+    // Year of "era" [0, 399].
+    const auto __yoe = static_cast<unsigned>(__y - __era * 400);
+    // Day of year [0, 365].
+    const auto __doy = (153 * (__m > 2 ? __m - 3 : __m + 9) + 2) / 5 + __d - 1;
+    // Day of "era" [0, 146096].
+    const auto __doe = __yoe * 365 + __yoe / 4 - __yoe / 100 + __doy;
+    const auto __days = __era * 146097 + static_cast<int>(__doe) - 719468;
+    return days{__days};
+  }
 
   constexpr bool
   operator==(const year_month_day& __x, const year_month_day& __y) noexcept
@@ -2264,7 +2323,7 @@ namespace chrono {
 
   constexpr year_month_day
   operator/(const year& __y, const month_day& __md) noexcept
-  { return __y / __md; }
+  { return __y / __md.month() / __md.day(); }
 
   constexpr year_month_day
   operator/(int __y, const month_day& __md) noexcept
@@ -2276,7 +2335,7 @@ namespace chrono {
 
   constexpr year_month_day
   operator/(const month_day& __md, int __y) noexcept
-  { return year(__y) / __md; }
+  { return chrono::year(__y) / __md; }
 
   constexpr year_month_day_last
   operator/(const year_month& __ym, last_spec) noexcept
@@ -2967,27 +3026,6 @@ namespace chrono {
   bool
   operator>=(const link& __x, const link& __y)
   { return !(__x < __y); }
-
-  constexpr chrono::weekday Sunday{0};
-  constexpr chrono::weekday Monday{1};
-  constexpr chrono::weekday Tuesday{2};
-  constexpr chrono::weekday Wednesday{3};
-  constexpr chrono::weekday Thursday{4};
-  constexpr chrono::weekday Friday{5};
-  constexpr chrono::weekday Saturday{6};
-
-  constexpr chrono::month January{1};
-  constexpr chrono::month February{2};
-  constexpr chrono::month March{3};
-  constexpr chrono::month April{4};
-  constexpr chrono::month May{5};
-  constexpr chrono::month June{6};
-  constexpr chrono::month July{7};
-  constexpr chrono::month August{8};
-  constexpr chrono::month September{9};
-  constexpr chrono::month October{10};
-  constexpr chrono::month November{11};
-  constexpr chrono::month December{12};
 
 } // namespace chrono
 

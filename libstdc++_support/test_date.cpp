@@ -7,7 +7,7 @@ g++ -std=c++17 -g -o test_date test_date.cpp
 #include <chrono.h>
 
 constexpr void
-test_day()
+constexpr_day()
 {
   using namespace std::chrono;
 
@@ -40,7 +40,7 @@ test_day()
 }
 
 constexpr void
-test_month()
+constexpr_month()
 {
   using namespace std::chrono;
 
@@ -51,6 +51,9 @@ test_month()
   dm--;
   dm += months{3};
   dm -= months{3};
+
+  static_assert(February + months{11} == January);
+  static_assert(January - February == months{11});
 
   static_assert(++month{4} == month{5});
   static_assert(month{4}++ == month{4});
@@ -73,7 +76,7 @@ test_month()
 }
 
 constexpr void
-test_year()
+constexpr_year()
 {
   using namespace std::chrono;
 
@@ -124,7 +127,7 @@ test_year()
 }
 
 constexpr void
-test_weekday()
+constexpr_weekday()
 {
   using namespace std::chrono;
 
@@ -136,6 +139,8 @@ test_weekday()
   dwd += days{3};
   dwd -= days{3};
 
+  static_assert(Monday + days{6} == Sunday);
+  static_assert(Sunday - Monday == days{6});
 /* Test 
     constexpr
     weekday(const sys_days& __dp) noexcept
@@ -177,11 +182,16 @@ test_weekday()
 }
 
 constexpr void
-test_weekday_indexed()
+constexpr_weekday_indexed()
 {
   using namespace std::chrono;
 
   weekday_indexed dwdi{};
+
+  // wdi0 is the second Sunday of an as yet unspecified month.
+  constexpr auto wdi0 = Sunday[2];
+  static_assert(wdi0.weekday() == Sunday);
+  static_assert(wdi0.index() == 2);
 
   constexpr auto wdl2 = weekday{3}[2];
   static_assert(wdl2.weekday() == weekday{3});
@@ -200,13 +210,16 @@ test_weekday_indexed()
 }
 
 constexpr void
-test_weekday_last()
+constexpr_weekday_last()
 {
   using namespace std::chrono;
 
-  constexpr auto wdl2 = weekday{3}[2];
-  static_assert(wdl2.weekday() == weekday{3});
-  static_assert(wdl2.index() == 2);
+  constexpr auto wdl0 = Sunday[last];
+  static_assert(wdl0.weekday() == Sunday);
+
+  constexpr auto wdl1 = weekday{3}[2];
+  static_assert(wdl1.weekday() == weekday{3});
+  static_assert(wdl1.index() == 2);
   constexpr auto wdll = weekday{3}[last];
   static_assert(wdll.weekday() == weekday{3});
 
@@ -221,13 +234,131 @@ test_weekday_last()
   static_assert( (weekday_last{weekday{0}} != weekday_last{weekday{2}}));
 }
 
+constexpr void
+constexpr_month_day()
+{
+  using namespace std::chrono;
+  using md = month_day;
+
+  //constexpr unsigned
+  //dim[12]
+  //{31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+
+  constexpr auto md1 = month_day{month{3}, day{13}};
+  static_assert(md1.month() == month{3});
+  static_assert(md1.day() == day{13});
+
+  static_assert(!month_day{month{1}, day{}}.ok());
+  static_assert( month_day{month{2}, day{1}}.ok());
+  static_assert( month_day{month{3}, day{31}}.ok());
+  static_assert(!month_day{month{4}, day{32}}.ok());
+  static_assert(!month_day{month{0}, day{11}}.ok());
+  static_assert(!month_day{month{13}, day{7}}.ok());
+  static_assert( month_day{month{2}, day{28}}.ok());
+  static_assert( month_day{month{2}, day{29}}.ok());
+  static_assert(!month_day{month{2}, day{30}}.ok());
+  //for (unsigned m = 0; m < 12; ++m)
+  //  for (unsigned d = 1; d <= dim[m]; ++d)
+  //    static_assert(month_day{month{m+1}, day{d}}.ok());
+
+  static_assert(!(md{month{1}, day{0}} == md{month{1}, day{1}}));
+  static_assert( (md{month{2}, day{0}} != md{month{2}, day{2}}));
+  static_assert( (md{month{3}, day{0}} <  md{month{3}, day{3}}));
+  static_assert(!(md{month{4}, day{0}} >  md{month{4}, day{4}}));
+  static_assert( (md{month{5}, day{0}} <= md{month{5}, day{5}}));
+  static_assert(!(md{month{6}, day{0}} >= md{month{6}, day{6}}));
+  static_assert( (md{month{10}, day{13}} == md{month{10}, day{13}}));
+  static_assert( (md{month{9}, day{13}} != md{month{10}, day{13}}));
+  static_assert( (md{month{8}, day{13}} < md{month{10}, day{13}}));
+  static_assert( (md{month{11}, day{13}} > md{month{10}, day{13}}));
+  static_assert( (md{month{10}, day{13}} <= md{month{10}, day{13}}));
+  static_assert( (md{month{10}, day{13}} >= md{month{10}, day{13}}));
+}
+
+constexpr void
+constexpr_month_day_last()
+{
+  using namespace std::chrono;
+  using mdl = month_day_last;
+
+  constexpr auto mdl0 = February / last;
+  static_assert(mdl0.month() == February);
+
+  constexpr auto mdl1 = month_day_last{month{3}};
+  static_assert(mdl1.month() == month{3});
+
+  static_assert( mdl{month{3}}.ok());
+  static_assert(!mdl{month{0}}.ok());
+  static_assert(!mdl{month{13}}.ok());
+
+  static_assert( (mdl{month{1}} == mdl{month{1}}));
+  static_assert(!(mdl{month{2}} != mdl{month{2}}));
+  static_assert(!(mdl{month{3}} <  mdl{month{3}}));
+  static_assert(!(mdl{month{4}} >  mdl{month{4}}));
+  static_assert( (mdl{month{5}} <= mdl{month{5}}));
+  static_assert( (mdl{month{6}} >= mdl{month{6}}));
+  static_assert( (mdl{month{10}} == mdl{month{10}}));
+  static_assert( (mdl{month{9}} != mdl{month{10}}));
+  static_assert( (mdl{month{8}} < mdl{month{10}}));
+  static_assert( (mdl{month{11}} > mdl{month{10}}));
+  static_assert( (mdl{month{10}} <= mdl{month{10}}));
+  static_assert( (mdl{month{10}} >= mdl{month{10}}));
+}
+
+constexpr void
+constexpr_month_weekday()
+{
+  using namespace std::chrono;
+  using mwd = month_weekday;
+
+  // mwd0 is the third Tuesday of February of an as yet unspecified year.
+  constexpr auto mwd0 = February / Tuesday[3];
+  static_assert(mwd0.month() == February);
+  static_assert(mwd0.weekday_indexed() == Tuesday[3]);
+
+}
+
+constexpr void
+constexpr_month_weekday_last()
+{
+  using namespace std::chrono;
+  using mwdl = month_weekday;
+
+  // mwd0 is the third Tuesday of February of an as yet unspecified year.
+  constexpr auto mwdl0 = February / Tuesday[last];
+  static_assert(mwdl0.month() == February);
+  static_assert(mwdl0.weekday_last() == Tuesday[last]);
+
+}
+
+constexpr void
+constexpr_year_month()
+{
+  using namespace std::chrono;
+  using ym = year_month;
+}
+
+constexpr void
+constexpr_year_month_day()
+{
+  using namespace std::chrono;
+  using ymd = year_month_day;
+
+  static_assert(ymd{sys_days{2017y/January/0}}  == 2016y/December/31);
+  static_assert(ymd{sys_days{2017y/January/31}} == 2017y/January/31);
+  static_assert(ymd{sys_days{2017y/January/32}} == 2017y/February/1);
+}
+
+constexpr void
+constexpr_year_month_day_last()
+{
+  using namespace std::chrono;
+  using mdl = month_day_last;
+  using ymdl = year_month_day_last;
+
+}
 
 int
 main()
 {
-  test_day();
-  test_month();
-  test_year();
-  test_weekday();
-  test_weekday_indexed();
 }
