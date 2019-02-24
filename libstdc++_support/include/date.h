@@ -2016,7 +2016,9 @@ namespace chrono {
 
     constexpr
     year_month_weekday(const chrono::year& __y, const chrono::month& __m,
-                       const chrono::weekday_indexed& __wdi) noexcept;
+                       const chrono::weekday_indexed& __wdi) noexcept
+    : _M_y{__y}, _M_m{__m}, _M_wdi{__wdi}
+    { }
 
     constexpr
     year_month_weekday(const sys_days& __dp) noexcept;

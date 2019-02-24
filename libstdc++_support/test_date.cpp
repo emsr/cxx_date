@@ -5,6 +5,7 @@ g++ -std=c++17 -g -o test_date test_date.cpp
 */
 
 #include <chrono.h>
+#include <iostream>
 
 constexpr void
 constexpr_day()
@@ -244,6 +245,9 @@ constexpr_month_day()
   //dim[12]
   //{31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 
+  month_day md0 = April/4;
+  month_day md2 = 4d/April;
+
   constexpr auto md1 = month_day{month{3}, day{13}};
   static_assert(md1.month() == month{3});
   static_assert(md1.day() == day{13});
@@ -336,6 +340,8 @@ constexpr_year_month()
 {
   using namespace std::chrono;
   using ym = year_month;
+
+  year_month ym0 = 2015y/April;
 }
 
 constexpr void
@@ -347,6 +353,20 @@ constexpr_year_month_day()
   static_assert(ymd{sys_days{2017y/January/0}}  == 2016y/December/31);
   static_assert(ymd{sys_days{2017y/January/31}} == 2017y/January/31);
   static_assert(ymd{sys_days{2017y/January/32}} == 2017y/February/1);
+//time_point_cast<days>(now)
+  constexpr ymd ymd2{year{1984}, August, 3d};
+  static_assert(ymd2.year() == year{1984});
+  static_assert(ymd2.month() == August);
+  static_assert(ymd2.day() == 3d);
+  //static_assert(sys_days(ymd2) == time_point_cast<days>(days{5356}));
+  //static_assert(local_days(ymd2) == time_point_cast<days>(days{5356}));
+
+  constexpr ymd unix = 1970y/1/1;
+  static_assert(unix.year() == year{1970});
+  static_assert(unix.month() == January);
+  static_assert(unix.day() == day{1});
+  //static_assert(sys_days(unix) == time_point_cast<days>(days{0}));
+  //static_assert(local_days(unix) == time_point_cast<days>(days{0}));
 }
 
 constexpr void
@@ -356,6 +376,58 @@ constexpr_year_month_day_last()
   using mdl = month_day_last;
   using ymdl = year_month_day_last;
 
+  year_month_day_last ymdl1{year{1066}, mdl{October}};
+  ymdl1 += months{9};
+  ymdl1 -= months{9};
+  ymdl1 += years{12};
+  ymdl1 -= years{12};
+
+  constexpr ymdl ymdl2{year{1984}, mdl{August}};
+  static_assert(ymdl2.year() == year{1984});
+  static_assert(ymdl2.month() == August);
+  static_assert(ymdl2.month_day_last() == mdl{August});
+  static_assert(ymdl2.day() == day{31});
+  //static_assert(sys_days(ymdl2).count() == 5356);
+  //static_assert(local_days(ymdl2).count() == 5356);
+
+  static_assert( (ymdl{year{1984}, mdl{August}}.ok()));
+  static_assert(!(ymdl{year{1984}, mdl{month{13}}}.ok()));
+}
+
+constexpr void
+constexpr_year_month_weekday()
+{
+  using namespace std::chrono;
+  using ymwd = year_month_weekday;
+
+  year_month_weekday ymwd1{};
+  ymwd1 += months{9};
+  ymwd1 -= months{9};
+  ymwd1 += years{12};
+  ymwd1 -= years{12};
+
+  constexpr ymwd ymwd2{year{1984}, month{August},
+		       weekday_indexed{Wednesday, 3}};
+  static_assert(ymwd2.year() == year{1984});
+  static_assert(ymwd2.month() == August);
+  static_assert(ymwd2.weekday() == Wednesday);
+  static_assert(ymwd2.index() == 3);
+  static_assert(ymwd2.weekday_indexed() == weekday_indexed{Wednesday, 3});
+
+  //constexpr ymwd unix(local_days{0});
+  constexpr ymwd unix{year{1970}, January, weekday_indexed{Thursday, 1}};
+  static_assert(unix.year() == year{1970});
+  static_assert(unix.month() == January);
+  static_assert(unix.weekday() == Thursday);
+  static_assert(unix.index() == 1);
+  static_assert(unix.weekday_indexed() == weekday_indexed{Thursday, 1});
+}
+
+constexpr void
+constexpr_year_month_weekday_last()
+{
+  using namespace std::chrono;
+  using ymwdl = year_month_weekday_last;
 }
 
 int
