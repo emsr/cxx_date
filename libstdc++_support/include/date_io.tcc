@@ -37,6 +37,7 @@ namespace chrono {
 	case: std::exa "Es"
 	case: std::ratio<60> "min"
 	case: ratio<3600> "h"
+	case: ratio<86400> "d"
 	default:
 	  if constexpr _Period::den == 1
 	    "[_Period::num]s"
