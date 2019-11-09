@@ -90,6 +90,7 @@ namespace chrono {
   class nonexistent_local_time;
   class ambiguous_local_time;
   class time_zone;
+  class tzdb;
   class tzdb_list;
   class leap;
   class link;
@@ -100,6 +101,9 @@ namespace chrono {
   };
 
   constexpr last_spec last{};
+
+  const tzdb& get_tzdb();
+  tzdb_list& get_tzdb_list();
 
   // CALENDAR COMPOSITION OPERATORS
 
@@ -261,6 +265,18 @@ namespace chrono {
 
   // CLOCKS
 
+  // Define sys and local time first.
+  template<typename _Duration>
+    using sys_time = time_point<system_clock, _Duration>;
+  using sys_seconds = sys_time<seconds>;
+  using sys_days = sys_time<days>;
+
+  struct local_t {};
+  template<typename _Duration>
+    using local_time = time_point<local_t, _Duration>;
+  using local_seconds = local_time<seconds>;
+  using local_days = local_time<days>;
+
   class utc_clock
   {
   public:
@@ -271,17 +287,21 @@ namespace chrono {
     using time_point = chrono::time_point<utc_clock>;
     static constexpr bool is_steady = false;
 
-    static time_point
-    now();
+    static time_point now()
+    { return from_sys(std::chrono::system_clock::now()); }
 
     template<typename _Duration>
       static chrono::time_point<system_clock, common_type_t<_Duration, seconds>>
-      to_sys(const chrono::time_point<utc_clock, _Duration>& __t);
+      to_sys(const chrono::time_point<utc_clock, _Duration>&);
 
     template<typename _Duration>
       static chrono::time_point<utc_clock, common_type_t<_Duration, seconds>>
-      from_sys(const chrono::time_point<system_clock, _Duration>& __t);
+      from_sys(const chrono::time_point<system_clock, _Duration>&);
   };
+
+  template<typename _Duration>
+    using utc_time = time_point<utc_clock, _Duration>;
+  using utc_seconds = utc_time<seconds>;
 
   class tai_clock
   {
@@ -294,7 +314,8 @@ namespace chrono {
     static constexpr bool is_steady = false;
 
     static time_point
-    now();
+    now()
+    { return from_utc(utc_clock::now()); };
 
     template<typename _Duration>
       static chrono::time_point<utc_clock, common_type_t<_Duration, seconds>>
@@ -304,6 +325,10 @@ namespace chrono {
       static chrono::time_point<tai_clock, common_type_t<_Duration, seconds>>
       from_utc(const chrono::time_point<utc_clock, _Duration>&) noexcept;
   };
+
+  template<typename _Duration>
+    using tai_time = time_point<tai_clock, _Duration>;
+  using tai_seconds = tai_time<seconds>;
 
   class gps_clock
   {
@@ -327,6 +352,10 @@ namespace chrono {
       from_utc(const chrono::time_point<utc_clock, _Duration>&) noexcept;
   };
 
+  template<typename _Duration>
+    using gps_time = time_point<gps_clock, _Duration>;
+  using gps_seconds = gps_time<seconds>;
+
   class file_clock
   {
   public:
@@ -342,31 +371,6 @@ namespace chrono {
 
     // Conversion functions, see below
   };
-
-  // TIME_POINT FAMILIES
-
-  template<typename _Duration>
-    using sys_time = time_point<system_clock, _Duration>;
-  using sys_seconds = sys_time<seconds>;
-  using sys_days = sys_time<days>;
-
-  struct local_t {};
-  template<typename _Duration>
-    using local_time = time_point<local_t, _Duration>;
-  using local_seconds = local_time<seconds>;
-  using local_days = local_time<days>;
-
-  template<typename _Duration>
-    using utc_time = time_point<utc_clock, _Duration>;
-  using utc_seconds = utc_time<seconds>;
-
-  template<typename _Duration>
-    using tai_time = time_point<tai_clock, _Duration>;
-  using tai_seconds = tai_time<seconds>;
-
-  template<typename _Duration>
-    using gps_time = time_point<gps_clock, _Duration>;
-  using gps_seconds = gps_time<seconds>;
 
   template<typename _Duration>
     using file_time = time_point<file_clock, _Duration>;
@@ -2519,6 +2523,119 @@ namespace chrono {
     std::basic_ostream<_CharT, _Traits>&
     operator<<(std::basic_ostream<_CharT, _Traits>& __os,
 	       const time_of_day<duration<_Rep, _Period>>& __t);
+
+  // CLOCK IMPLEMENTATION
+
+namespace __detail
+{
+  template<typename _Duration>
+    std::chrono::seconds
+    __num_leap_secs(const sys_time<_Duration>& __t_sys)
+    {
+      const auto& __leap_sec = get_tzdb().leaps;
+      const auto __it = std::upper_bound(__leap_sec.begin(), __leap_sec.end(),
+					 __t_sys);
+      return std::chrono::seconds{__it - __leap_sec.begin()};
+    }
+
+  // Return pair<is_leap_second, seconds{number_of_leap_seconds_since_1970}>
+  // first is true if ut is during a leap second insertion, otherwise false.
+  // If ut is during a leap second insertion, that leap second is included in the count
+  template <class _Duration>
+    std::pair<bool, std::chrono::seconds>
+    is_leap_second(utc_time<_Duration> const& __t_utc)
+    {
+      using std::chrono::seconds;
+      using __dur_t = std::common_type_t<_Duration, seconds>;
+      auto __t_sys = sys_time<__dur_t>{__t_utc.time_since_epoch()};
+
+      auto const& __leap_sec = get_tzdb().leaps;
+      auto const __it = std::upper_bound(__leap_sec.begin(), __leap_sec.end(),
+					 __t_sys);
+      auto __ds = seconds{__it - __leap_sec.begin()};
+
+      __t_sys -= __ds;
+      auto __on_leap = false;
+      if (__it > __leap_sec.begin())
+	{
+          if (__t_sys < __it[-1])
+	    {
+              if (__t_sys >= __it[-1].date() - seconds{1})
+		__on_leap = true;
+              else
+		--__ds;
+	    }
+	}
+      return {__on_leap, __ds};
+    }
+}
+
+  template<typename _Duration>
+    utc_time<std::common_type_t<_Duration, std::chrono::seconds>>
+    utc_clock::from_sys(const sys_time<_Duration>& __t_sys)
+    {
+      using std::chrono::seconds;
+      using __dur_t = std::common_type_t<_Duration, seconds>;
+      return utc_time<__dur_t>{__t_sys.time_since_epoch()
+			     + __detail::__num_leap_secs<_Duration>(__t_sys)};
+    }
+
+  template<typename _Duration>
+    sys_time<std::common_type_t<_Duration, std::chrono::seconds>>
+    utc_clock::to_sys(const utc_time<_Duration>& __t_utc)
+    {
+      using std::chrono::seconds;
+      using __dur_t = std::common_type_t<_Duration, seconds>;
+      auto __leap_sec = is_leap_second(__t_utc);
+      auto __t_sys = sys_time<__dur_t>{__t_utc.time_since_epoch() - __leap_sec.second};
+      if (__leap_sec.first)
+        __t_sys = floor<seconds>(__t_sys) + seconds{1} - __dur_t{1};
+      return __t_sys;
+    }
+
+  template<typename _Duration>
+    inline utc_time<std::common_type_t<_Duration, std::chrono::seconds>>
+    tai_clock::to_utc(const tai_time<_Duration>& __t_tai) noexcept
+    {
+      using std::chrono::seconds;
+      using __dur_t = std::common_type_t<_Duration, seconds>;
+      return utc_time<__dur_t>{__t_tai.time_since_epoch()}
+	   - (sys_days(year{1970}/January/1)
+	   - sys_days(year{1958}/January/1) + seconds{10});
+    }
+
+  template<typename _Duration>
+    inline tai_time<std::common_type_t<_Duration, std::chrono::seconds>>
+    tai_clock::from_utc(const utc_time<_Duration>& __t_utc) noexcept
+    {
+      using std::chrono::seconds;
+      using __dur_t = std::common_type_t<_Duration, seconds>;
+      return tai_time<__dur_t>{__t_utc.time_since_epoch()}
+	   + (sys_days(year{1970}/January/1)
+	    - sys_days(year{1958}/January/1) + seconds{10});
+    }
+
+  template<typename _Duration>
+    inline utc_time<std::common_type_t<_Duration, std::chrono::seconds>>
+    gps_clock::to_utc(const gps_time<_Duration>& __t_gps) noexcept
+    {
+      using std::chrono::seconds;
+      using _dur_t = std::common_type_t<_Duration, seconds>;
+      return utc_time<_dur_t>{__t_gps.time_since_epoch()}
+	   + (sys_days(year{1980}/January/Sunday[1])
+	    - sys_days(year{1970}/January/1) + seconds{9});
+    }
+
+  template<typename _Duration>
+    inline gps_time<std::common_type_t<_Duration, std::chrono::seconds>>
+    gps_clock::from_utc(const utc_time<_Duration>& __t_utc) noexcept
+    {
+      using std::chrono::seconds;
+      using _dur_t = std::common_type_t<_Duration, seconds>;
+      return gps_time<_dur_t>{__t_utc.time_since_epoch()}
+	   - (sys_days(year{1980}/January/Sunday[1])
+	    - sys_days(year{1970}/January/1) + seconds{9});
+    }
 
   // INFORMATION CLASSES
 
