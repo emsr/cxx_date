@@ -28,25 +28,10 @@ constexpr_year_month_weekday()
   using namespace std::chrono;
   using ymwd = year_month_weekday;
 
-  year_month_weekday ymwd1{};
-  ymwd1 += months{9};
-  ymwd1 -= months{9};
-  ymwd1 += years{12};
-  ymwd1 -= years{12};
-
-  constexpr ymwd ymwd2{year{1984}, month{August},
-		       weekday_indexed{Wednesday, 3}};
-  static_assert(ymwd2.year() == year{1984});
-  static_assert(ymwd2.month() == August);
-  static_assert(ymwd2.weekday() == Wednesday);
-  static_assert(ymwd2.index() == 3);
-  static_assert(ymwd2.weekday_indexed() == weekday_indexed{Wednesday, 3});
-
-  //constexpr ymwd unix(local_days{0});
-  constexpr ymwd unix{year{1970}, January, weekday_indexed{Thursday, 1}};
-  static_assert(unix.year() == year{1970});
-  static_assert(unix.month() == January);
-  static_assert(unix.weekday() == Thursday);
-  static_assert(unix.index() == 1);
-  static_assert(unix.weekday_indexed() == weekday_indexed{Thursday, 1});
+  // Div operations...
+  static_assert(2015y/August/Friday[2] == ymwd{year{2015}, month{8}, weekday_indexed{weekday{5u}, 2}});
+  static_assert(2015y/(August/Friday[2]) == ymwd{year{2015}, month{8}, weekday_indexed{weekday{5u}, 2}});
+  static_assert(2015/(August/Friday[2]) == ymwd{year{2015}, month{8}, weekday_indexed{weekday{5u}, 2}});
+  static_assert(August/Friday[2]/2015y == ymwd{year{2015}, month{8}, weekday_indexed{weekday{5u}, 2}});
+  static_assert(August/Friday[2]/2015 == ymwd{year{2015}, month{8}, weekday_indexed{weekday{5u}, 2}});
 }

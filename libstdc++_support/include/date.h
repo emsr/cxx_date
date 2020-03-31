@@ -7,6 +7,7 @@
 #include <vector>
 #include <string>
 #include <atomic>
+#include <algorithm>
 
 // This could use a dose of <=> ...
 
@@ -29,13 +30,14 @@ namespace chrono {
   }
 
   // TRAITS
-
+#if __GNUC__ < 10 // done
   template<typename _Tp>
     struct is_clock;
 
   template<typename _Tp>
     inline constexpr bool
     is_clock_v = is_clock<_Tp>::value;
+#endif
 
   // DURATION I/O
 
@@ -62,6 +64,7 @@ namespace chrono {
   // We are tacitly assuming 'int' is sufficient for these
   // in the math operators below.
 
+#if __GNUC__ < 10 // Done
   // signed integer type of at least 25 bits
   using days = duration<int, ratio_multiply<ratio<24>, hours::period>>;
   // signed integer type of at least 22 bits
@@ -70,6 +73,7 @@ namespace chrono {
   using years = duration<int, ratio_multiply<ratio<146097, 400>, days::period>>;
   // signed integer type of at least 20 bits
   using months = duration<int, ratio_divide<years::period, ratio<12>>>;
+#endif
 
   // CLASS DECLARATIONS
   class day;
@@ -264,7 +268,7 @@ namespace chrono {
   constexpr weekday operator-(const weekday& __x, const days& __y) noexcept;
 
   // CLOCKS
-
+#if __GNUC__ < 10 // Done.
   // Define sys and local time first.
   template<typename _Duration>
     using sys_time = time_point<system_clock, _Duration>;
@@ -276,6 +280,7 @@ namespace chrono {
     using local_time = time_point<local_t, _Duration>;
   using local_seconds = local_time<seconds>;
   using local_days = local_time<days>;
+#endif
 
   class utc_clock
   {
@@ -356,6 +361,7 @@ namespace chrono {
     using gps_time = time_point<gps_clock, _Duration>;
   using gps_seconds = gps_time<seconds>;
 
+#if __GNUC__ < 10 // Done.
   class file_clock
   {
   public:
@@ -371,6 +377,7 @@ namespace chrono {
 
     // Conversion functions, see below
   };
+#endif
 
   template<typename _Duration>
     using file_time = time_point<file_clock, _Duration>;
@@ -792,7 +799,8 @@ namespace chrono {
     operator unsigned() const noexcept
     { return this->_M_m; }
 
-    constexpr bool ok() const noexcept
+    constexpr bool
+    ok() const noexcept
     { return 1 <= this->_M_m && this->_M_m <= 12; }
   };
 
@@ -986,16 +994,20 @@ namespace chrono {
   { return !(__x < __y); }
 
   constexpr year
-  operator+(const year&x, const years& __y) noexcept;
+  operator+(const year& __x, const years& __y) noexcept
+  { return year{static_cast<int>(__x) + __y.count()}; }
 
   constexpr year
-  operator+(const years& __x, const year& __y) noexcept;
+  operator+(const years& __x, const year& __y) noexcept
+  { return __y + __x; }
 
   constexpr year
-  operator-(const year& __x, const years& __y) noexcept;
+  operator-(const year& __x, const years& __y) noexcept
+  { return year{static_cast<int>(__x) - __y.count()}; }
 
   constexpr years
-  operator-(const year& __x, const year& __y) noexcept;
+  operator-(const year& __x, const year& __y) noexcept
+  { return years{static_cast<int>(__x) - static_cast<int>(__y)}; }
 
   template<typename _CharT, typename _Traits>
     std::basic_ostream<_CharT, _Traits>&
@@ -1260,6 +1272,7 @@ namespace chrono {
   public:
 
     month_day() = default;
+
     constexpr
     month_day(const chrono::month& __m, const chrono::day& __d) noexcept
     : _M_m{__m}, _M_d{__d}
@@ -1912,7 +1925,7 @@ namespace chrono {
 
     constexpr
     operator sys_days() const noexcept
-    { sys_days{this->year() / this->month() / this->day()}; }
+    { return sys_days{this->year() / this->month() / this->day()}; }
 
     explicit constexpr
     operator local_days() const noexcept
@@ -2181,7 +2194,11 @@ namespace chrono {
 
     constexpr
     operator sys_days() const noexcept
-    { return sys_days{sys_days{*this}.time_since_epoch()}; }
+    {
+      const auto __d = sys_days(this->_M_y / this->_M_m / last);
+      return sys_days{(__d - (chrono::weekday{__d}
+			   - this->_M_wdl.weekday())).time_since_epoch()};
+    }
 
     explicit constexpr
     operator local_days() const noexcept

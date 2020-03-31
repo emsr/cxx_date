@@ -28,8 +28,9 @@ constexpr_month_weekday()
   using namespace std::chrono;
   using mwd = month_weekday;
 
-  // mwd0 is the third Tuesday of February of an as yet unspecified year.
-  constexpr auto mwd0 = February / Tuesday[3];
-  static_assert(mwd0.month() == February);
-  static_assert(mwd0.weekday_indexed() == Tuesday[3]);
+  // Div ops...
+  static_assert(August/Friday[2] == mwd{month{8}, weekday_indexed{weekday{5u}, 2}});
+  static_assert(8/Friday[2] == mwd{month{8}, weekday_indexed{weekday{5u}, 2}});
+  static_assert(Friday[2]/August == mwd{month{8}, weekday_indexed{weekday{5u}, 2}});
+  static_assert(Friday[2]/8 == mwd{month{8}, weekday_indexed{weekday{5u}, 2}});
 }

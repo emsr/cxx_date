@@ -1,7 +1,7 @@
-// { dg-options "-std=gnu++2a" }
-// { dg-do compile { target c++2a } }
+// { dg-options "-std=gnu++20" }
+// { dg-do compile { target c++20 } }
 
-// Copyright (C) 2019 Free Software Foundation, Inc.
+// Copyright (C) 2020 Free Software Foundation, Inc.
 //
 // This file is part of the GNU ISO C++ Library.  This library is free
 // software; you can redistribute it and/or modify it under the
@@ -18,7 +18,7 @@
 // with this library; see the file COPYING3.  If not see
 // <http://www.gnu.org/licenses/>.
 
-// Class template day [time.cal.month_day]
+// Class template month_day [time.cal.month_day]
 
 #include <chrono>
 
@@ -30,7 +30,7 @@ constexpr_month_day()
 
   //constexpr unsigned
   //dim[12]
-  //{31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+  //{31u, 29u, 31u, 30u, 31u, 30u, 31u, 31u, 30u, 31u, 30u, 31u};
 
   month_day md0 = April/4;
   month_day md2 = 4d/April;
@@ -48,9 +48,9 @@ constexpr_month_day()
   static_assert( month_day{month{2}, day{28}}.ok());
   static_assert( month_day{month{2}, day{29}}.ok());
   static_assert(!month_day{month{2}, day{30}}.ok());
-  //for (unsigned m = 0; m < 12; ++m)
-  //  for (unsigned d = 1; d <= dim[m]; ++d)
-  //    static_assert(month_day{month{m+1}, day{d}}.ok());
+  //for (unsigned m = 0u; m < 12u; ++m)
+  //  for (unsigned d = 1u; d <= dim[m]; ++d)
+  //    static_assert(month_day{month{m+1u}, day{d}}.ok());
 
   static_assert(!(md{month{1}, day{0}} == md{month{1}, day{1}}));
   static_assert( (md{month{2}, day{0}} != md{month{2}, day{2}}));

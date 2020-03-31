@@ -18,18 +18,19 @@
 // with this library; see the file COPYING3.  If not see
 // <http://www.gnu.org/licenses/>.
 
-// Class template day [time.cal.month_weekday]
+// Class template day [time.cal.month_weekday_last]
 
 #include <chrono>
 
 constexpr void
-constexpr_month_weekday()
+constexpr_month_weekday_last()
 {
   using namespace std::chrono;
-  using mwd = month_weekday;
+  using mwdl = month_weekday_last;
 
-  // mwd0 is the third Tuesday of February of an as yet unspecified year.
-  constexpr auto mwd0 = February / Tuesday[3];
-  static_assert(mwd0.month() == February);
-  static_assert(mwd0.weekday_indexed() == Tuesday[3]);
+  // Div ops...
+  static_assert(August/Friday[last] == mwdl{month{8}, weekday_last{weekday{5u}}});
+  static_assert(8/Friday[last] == mwdl{month{8}, weekday_last{weekday{5u}}});
+  static_assert(Friday[last]/August == mwdl{month{8}, weekday_last{weekday{5u}}});
+  static_assert(Friday[last]/8 == mwdl{month{8}, weekday_last{weekday{5u}}});
 }

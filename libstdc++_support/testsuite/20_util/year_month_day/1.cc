@@ -1,7 +1,7 @@
-// { dg-options "-std=gnu++2a" }
-// { dg-do compile { target c++2a } }
+// { dg-options "-std=gnu++20" }
+// { dg-do compile { target c++20 } }
 
-// Copyright (C) 2019 Free Software Foundation, Inc.
+// Copyright (C) 2020 Free Software Foundation, Inc.
 //
 // This file is part of the GNU ISO C++ Library.  This library is free
 // software; you can redistribute it and/or modify it under the
@@ -31,7 +31,7 @@ constexpr_year_month_day()
   static_assert(ymd{sys_days{2017y/January/0}}  == 2016y/December/31);
   static_assert(ymd{sys_days{2017y/January/31}} == 2017y/January/31);
   static_assert(ymd{sys_days{2017y/January/32}} == 2017y/February/1);
-//time_point_cast<days>(now)
+
   constexpr ymd ymd2{year{1984}, August, 3d};
   static_assert(ymd2.year() == year{1984});
   static_assert(ymd2.month() == August);

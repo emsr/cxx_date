@@ -1,7 +1,6 @@
 // { dg-options "-std=gnu++20" }
 // { dg-do compile { target c++20 } }
 
-// Copyright (C) 2020 Free Software Foundation, Inc.
 //
 // This file is part of the GNU ISO C++ Library.  This library is free
 // software; you can redistribute it and/or modify it under the
@@ -18,18 +17,21 @@
 // with this library; see the file COPYING3.  If not see
 // <http://www.gnu.org/licenses/>.
 
-// Class template day [time.cal.month_weekday]
+// Class template day [time.cal.year_month_day]
 
 #include <chrono>
 
 constexpr void
-constexpr_month_weekday()
+constexpr_year_month_day()
 {
   using namespace std::chrono;
-  using mwd = month_weekday;
+  using ymd = year_month_day;
 
-  // mwd0 is the third Tuesday of February of an as yet unspecified year.
-  constexpr auto mwd0 = February / Tuesday[3];
-  static_assert(mwd0.month() == February);
-  static_assert(mwd0.weekday_indexed() == Tuesday[3]);
+  // Div ops...
+  static_assert(2015y/August/14d == ymd{year{2015}, month{8}, day{14}});
+  static_assert(2015y/August/14 == ymd{year{2015}, month{8}, day{14}});
+  static_assert(2015y/(August/14d) == ymd{year{2015}, month{8}, day{14}});
+  static_assert(2015/(August/14d) == ymd{year{2015}, month{8}, day{14}});
+  static_assert(August/14d/2015y == ymd{year{2015}, month{8}, day{14}});
+  static_assert(August/14d/2015 == ymd{year{2015}, month{8}, day{14}});
 }
